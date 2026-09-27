@@ -59,7 +59,7 @@
       const textInput = document.querySelector(".add-form-text");
       const addButton = document.querySelector(".add-form-button");
     
-      nameInput.addEventListener("input", function() {
+      nameInput.addEventListener("input" , function() {
         console.log("Имя изменилось:", nameInput.value);
       });
       textInput.addEventListener("input", function() {
@@ -67,6 +67,9 @@
       });
     
       addButton.addEventListener("click", function() {
+        const nameInput = document.querySelector(".add-form-name");
+        const textInput = document.querySelector(".add-form-text");
+        console.log("Кнопка 'Написать' успешно нажата!");
         const now = new Date();
         const currentDate = now.toLocaleString("ru-RU", {
           day: "2-digit",
@@ -99,7 +102,6 @@
         commentsList.innerHTML += newCommentHtml;
         nameInput.value = "";
         textInput.value = "";
-        
       });
 
 </script>
