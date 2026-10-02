@@ -52,6 +52,11 @@
       </div>
     </div>
   </body>
+  <style>
+    .error {
+      background-color: red;
+    }
+  </style>
   <script>
 
       const commentsList = document.querySelector(".comments");
@@ -61,15 +66,28 @@
     
       nameInput.addEventListener("input" , function() {
         console.log("Имя изменилось:", nameInput.value);
+        nameInput.classList.remove("error");
       });
       textInput.addEventListener("input", function() {
         console.log("Комментарий изменился:", textInput.value);
+        textInput.classList.remove("error");
       });
     
       addButton.addEventListener("click", function() {
         const nameInput = document.querySelector(".add-form-name");
         const textInput = document.querySelector(".add-form-text");
         console.log("Кнопка 'Написать' успешно нажата!");
+        nameInput.classList.remove("error");
+        textInput.classList.remove("error");
+        if (nameInput.value.trim() === "") {
+          nameInput.classList.add("error");
+        }
+        if (textInput.value.trim() === "") {
+          textInput.classList.add("error");
+        }
+        if (nameInput.value.trim() === "" || textInput.value.trim() === "") {
+          return;
+        }
         const now = new Date();
         const currentDate = now.toLocaleString("ru-RU", {
           day: "2-digit",
