@@ -38,7 +38,7 @@
           <div class="comment-footer">
             <div class="likes">
               <span class="likes-counter">75</span>
-              <button class="like-button -active-like"></button>
+              <button class="like-button"></button>
             </div>
           </div>
         </li>
@@ -120,6 +120,23 @@
         commentsList.innerHTML += newCommentHtml;
         nameInput.value = "";
         textInput.value = "";
+      });
+
+      commentsList.addEventListener("click", function(event) {
+        if (event.target.classList.contains("like-button")) {
+          const likeButton = event.target;
+          const likesContainer = likeButton.closest(".likes");
+          const likesCounter = likesContainer.querySelector(".likes-counter");
+          let currentLikes = parseInt(likesCounter.textContent);
+      
+          if (likeButton.classList.contains("-active-like")) {
+            likeButton.classList.remove("-active-like"); 
+            likesCounter.textContent = currentLikes - 1; 
+          } else {
+            likeButton.classList.add("-active-like");    
+            likesCounter.textContent = currentLikes + 1; 
+          }
+        }
       });
 
 </script>
