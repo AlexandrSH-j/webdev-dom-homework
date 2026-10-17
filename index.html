@@ -31,6 +31,10 @@
     const textInput = document.querySelector(".add-form-text");
     const addButton = document.querySelector(".add-form-button");
 
+    const sanitizeHtml = (value) => {
+      return value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    };
+
     const comments = [
       {
         name: "Глеб Фокин",
@@ -51,14 +55,15 @@
     function renderComments() {
       const commentsHtml = comments.map((comment, index) => {
         return `
-          <li class="comment">
+          <!-- Добавили data-index на элемент li, чтобы ловить клик по всему комментарию -->
+          <li class="comment" data-index="${index}">
             <div class="comment-header">
-              <div>${comment.name}</div>
+              <div>${sanitizeHtml(comment.name)}</div>
               <div>${comment.date}</div>
             </div>
             <div class="comment-body">
               <div class="comment-text">
-                ${comment.text}
+                ${sanitizeHtml(comment.text)}
               </div>
             </div>
             <div class="comment-footer">
@@ -78,7 +83,9 @@
       const likeButtons = document.querySelectorAll(".like-button");
 
       for (const likeButton of likeButtons) {
-        likeButton.addEventListener("click", () => {
+        likeButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+
           const index = likeButton.dataset.index;
           const comment = comments[index];
 
@@ -91,6 +98,19 @@
           }
 
           renderComments();
+        });
+      }
+
+      const commentsElements = document.querySelectorAll(".comment");
+
+      for (const commentElement of commentsElements) {
+        commentElement.addEventListener("click", () => {
+          const index = commentElement.dataset.index;
+          const currentComment = comments[index];
+          
+          textInput.value = `> ${currentComment.name}:\n${currentComment.text}\n\n`;
+          
+          textInput.focus();
         });
       }
     }
@@ -111,7 +131,6 @@
       nameInput.classList.remove("error");
       textInput.classList.remove("error");
 
-
       if (nameInput.value.trim() === "") {
         nameInput.classList.add("error");
       }
@@ -123,13 +142,11 @@
         return;
       }
 
-
       const now = new Date();
       const currentDate = now.toLocaleString("ru-RU", {
         day: "2-digit", month: "2-digit", year: "2-digit",
         hour: "2-digit", minute: "2-digit"
       }).replace(",", "");
-
 
       comments.push({
         name: nameInput.value,
@@ -139,15 +156,12 @@
         isLiked: false
       });
 
-
       renderComments();
-
 
       nameInput.value = "";
       textInput.value = "";
     });
 
-    
     renderComments();
 
   </script>
