@@ -5,67 +5,164 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-
   <body>
     <div class="container">
-      <ul class="comments">
-        <li class="comment">
-          <div class="comment-header">
-            <div>Глеб Фокин</div>
-            <div>12.02.22 12:18</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Это будет первый комментарий на этой странице
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">3</span>
-              <button class="like-button"></button>
-            </div>
-          </div>
-        </li>
-        <li class="comment">
-          <div class="comment-header">
-            <div>Варвара Н.</div>
-            <div>13.02.22 19:22</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              Мне нравится как оформлена эта страница! ❤
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">75</span>
-              <button class="like-button -active-like"></button>
-            </div>
-          </div>
-        </li>
+      <ul class="comments" id="comments-list">
       </ul>
       <div class="add-form">
-        <input
-          type="text"
-          class="add-form-name"
-          placeholder="Введите ваше имя"
-        />
-        <textarea
-          type="textarea"
-          class="add-form-text"
-          placeholder="Введите ваш коментарий"
-          rows="4"
-        ></textarea>
+        <input type="text" class="add-form-name" id="name-input" placeholder="Введите ваше имя" />
+        <textarea type="textarea" class="add-form-text" id="text-input" placeholder="Введите ваш коментарий" rows="4"></textarea>
         <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
+          <button class="add-form-button" id="add-button">Написать</button>
         </div>
       </div>
     </div>
   </body>
-
+  <style>
+    .error {
+      background-color: red;
+    }
+  </style>
   <script>
     "use strict";
-    // Код писать здесь
-    console.log("It works!");
+
+    const commentsList = document.querySelector(".comments");
+    const nameInput = document.querySelector(".add-form-name");
+    const textInput = document.querySelector(".add-form-text");
+    const addButton = document.querySelector(".add-form-button");
+
+    const sanitizeHtml = (value) => {
+      return value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    };
+
+    const comments = [
+      {
+        name: "Глеб Фокин",
+        date: "12.02.22 12:18",
+        text: "Это будет первый комментарий на этой странице",
+        likes: 3,
+        isLiked: false
+      },
+      {
+        name: "Варвара Н.",
+        date: "13.02.22 19:22",
+        text: "Мне нравится как оформлена эта страница! ❤",
+        likes: 75,
+        isLiked: false
+      }
+    ];
+
+    function renderComments() {
+      const commentsHtml = comments.map((comment, index) => {
+        return `
+          <!-- Добавили data-index на элемент li, чтобы ловить клик по всему комментарию -->
+          <li class="comment" data-index="${index}">
+            <div class="comment-header">
+              <div>${sanitizeHtml(comment.name)}</div>
+              <div>${comment.date}</div>
+            </div>
+            <div class="comment-body">
+              <div class="comment-text">
+                ${sanitizeHtml(comment.text)}
+              </div>
+            </div>
+            <div class="comment-footer">
+              <div class="likes">
+                <span class="likes-counter">${comment.likes}</span>
+                <button data-index="${index}" class="like-button ${comment.isLiked ? '-active-like' : ''}"></button>
+              </div>
+            </div>
+          </li>
+        `;
+      }).join("");
+      commentsList.innerHTML = commentsHtml;
+      initLikeButtonsListeners();
+    }
+
+    function initLikeButtonsListeners() {
+      const likeButtons = document.querySelectorAll(".like-button");
+
+      for (const likeButton of likeButtons) {
+        likeButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+
+          const index = likeButton.dataset.index;
+          const comment = comments[index];
+
+          if (comment.isLiked) {
+            comment.isLiked = false;
+            comment.likes--;
+          } else {
+            comment.isLiked = true;
+            comment.likes++;
+          }
+
+          renderComments();
+        });
+      }
+
+      const commentsElements = document.querySelectorAll(".comment");
+
+      for (const commentElement of commentsElements) {
+        commentElement.addEventListener("click", () => {
+          const index = commentElement.dataset.index;
+          const currentComment = comments[index];
+          
+          textInput.value = `> ${currentComment.name}:\n${currentComment.text}\n\n`;
+          
+          textInput.focus();
+        });
+      }
+    }
+      
+    nameInput.addEventListener("input" , function() {
+      console.log("Имя изменилось:", nameInput.value);
+      nameInput.classList.remove("error");
+    });
+    
+    textInput.addEventListener("input", function() {
+      console.log("Комментарий изменился:", textInput.value);
+      textInput.classList.remove("error");
+    });
+    
+    addButton.addEventListener("click", function() {
+      console.log("Кнопка 'Написать' успешно нажата!");
+      
+      nameInput.classList.remove("error");
+      textInput.classList.remove("error");
+
+      if (nameInput.value.trim() === "") {
+        nameInput.classList.add("error");
+      }
+      if (textInput.value.trim() === "") {
+        textInput.classList.add("error");
+      }
+
+      if (nameInput.value.trim() === "" || textInput.value.trim() === "") {
+        return;
+      }
+
+      const now = new Date();
+      const currentDate = now.toLocaleString("ru-RU", {
+        day: "2-digit", month: "2-digit", year: "2-digit",
+        hour: "2-digit", minute: "2-digit"
+      }).replace(",", "");
+
+      comments.push({
+        name: nameInput.value,
+        date: currentDate,
+        text: textInput.value,
+        likes: 0,
+        isLiked: false
+      });
+
+      renderComments();
+
+      nameInput.value = "";
+      textInput.value = "";
+    });
+
+    renderComments();
+
   </script>
 </html>
