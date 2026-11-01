@@ -1,4 +1,4 @@
-import { comments } from "./modules/commentsData.js";
+import { getCommentsFromServer, postCommentToServer } from "./modules/commentsData.js";
 import { renderComments } from "./modules/render.js";
 
 const nameInput = document.querySelector(".add-form-name");
@@ -19,24 +19,32 @@ addButton.addEventListener("click", () => {
     return;
   }
 
-  const now = new Date();
-  const currentDate = now.toLocaleString("ru-RU", {
-    day: "2-digit", month: "2-digit", year: "2-digit",
-    hour: "2-digit", minute: "2-digit"
-  }).replace(",", "");
+  addButton.disabled = true;
+  addButton.textContent = "Элемент добавляется...";
 
-  comments.push({
-    name: nameInput.value,
-    date: currentDate,
-    text: textInput.value,
-    likes: 0,
-    isLiked: false
-  });
-
-  renderComments();
-
-  nameInput.value = "";
-  textInput.value = "";
+  postCommentToServer(nameInput.value, textInput.value)
+    .then(() => {
+      return getCommentsFromServer();
+    })
+    .then(() => {
+      renderComments();
+      nameInput.value = "";
+      textInput.value = "";
+    })
+    .catch((error) => {
+      alert(error.message);
+    })
+    .finally(() => {
+      addButton.disabled = false;
+      addButton.textContent = "Написать";
+    });
 });
 
-renderComments();
+getCommentsFromServer()
+  .then(() => {
+    renderComments();
+  })
+  .catch((error) => {
+    alert("Не удалось загрузить комментарии. Проверьте соединение.");
+    console.error(error);
+  });
