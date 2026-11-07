@@ -5,6 +5,10 @@ const nameInput = document.querySelector(".add-form-name");
 const textInput = document.querySelector(".add-form-text");
 const addButton = document.querySelector(".add-form-button");
 
+const commentsLoading = document.getElementById("comments-loading");
+const commentAddingLoader = document.getElementById("comment-adding-loader");
+const addForm = document.getElementById("add-form");
+
 nameInput.addEventListener("input", () => nameInput.classList.remove("error"));
 textInput.addEventListener("input", () => textInput.classList.remove("error"));
 
@@ -19,8 +23,8 @@ addButton.addEventListener("click", () => {
     return;
   }
 
-  addButton.disabled = true;
-  addButton.textContent = "Элемент добавляется...";
+  addForm.style.display = "none";
+  commentAddingLoader.style.display = "block";
 
   postCommentToServer(nameInput.value, textInput.value)
     .then(() => {
@@ -35,13 +39,14 @@ addButton.addEventListener("click", () => {
       alert(error.message);
     })
     .finally(() => {
-      addButton.disabled = false;
-      addButton.textContent = "Написать";
+      addForm.style.display = "flex";
+      commentAddingLoader.style.display = "none";
     });
 });
 
 getCommentsFromServer()
   .then(() => {
+    commentsLoading.style.display = "none";
     renderComments();
   })
   .catch((error) => {
