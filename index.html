@@ -7,22 +7,21 @@
   </head>
   <body>
     <div class="container">
-      <div id="comments-loading" style="color: rgb(255, 254, 254);">
+      <div id="comments-loading" style="color: gray;">
         Пожалуйста подождите, загружаются комментарии...
       </div>
-      <ul class="comments" id="comments-list">
-      </ul>
-      <div id="comment-adding-loader" style="display: none;">
-        Комментарий добавляется...
+      <ul class="comments" id="comments-list"></ul>
+      <div id="comment-adding-loader" style="color: gray; display: none;">
       </div>
-      <div class="add-form">
+      <div class="add-form" id="add-form">
         <input type="text" class="add-form-name" id="name-input" placeholder="Введите ваше имя" />
         <textarea type="textarea" class="add-form-text" id="text-input" placeholder="Введите ваш коментарий" rows="4"></textarea>
         <div class="add-form-row">
           <button class="add-form-button" id="add-button">Написать</button>
         </div>
+      </div>
     </div>
-    <script type="module" src="/main.js"></script>
+    <script type="module" src="./main.js"></script>
   </body>
   <style>
     .error {

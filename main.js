@@ -22,7 +22,7 @@ addButton.addEventListener("click", () => {
   if (nameInput.value.trim() === "" || textInput.value.trim() === "") {
     return;
   }
-
+  
   addForm.style.display = "none";
   commentAddingLoader.style.display = "block";
 
@@ -36,7 +36,11 @@ addButton.addEventListener("click", () => {
       textInput.value = "";
     })
     .catch((error) => {
-      alert(error.message);
+      if (error.message === "Failed to fetch") {
+        alert("Кажется, у вас сломался интернет, попробуйте позже");
+      } else {
+        alert(error.message);
+      }
     })
     .finally(() => {
       addForm.style.display = "flex";
@@ -50,6 +54,11 @@ getCommentsFromServer()
     renderComments();
   })
   .catch((error) => {
-    alert("Не удалось загрузить комментарии. Проверьте соединение.");
-    console.error(error);
+    if (error.message === "Failed to fetch") {
+      commentsLoading.textContent = "Кажется, у вас сломался интернет, попробуйте обновить страницу позже.";
+      alert("Кажется, у вас сломался интернет, попробуйте позже");
+    } else {
+      commentsLoading.textContent = error.message;
+      alert(error.message);
+    }
   });
